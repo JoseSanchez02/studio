@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -162,6 +163,7 @@ const Sidebar = React.forwardRef<
     side?: "left" | "right"
     variant?: "sidebar" | "floating" | "inset"
     collapsible?: "offcanvas" | "icon" | "none"
+    defaultOpen?: boolean; // Declare defaultOpen to destructure it
   }
 >(
   (
@@ -171,7 +173,8 @@ const Sidebar = React.forwardRef<
       collapsible = "offcanvas",
       className,
       children,
-      ...props
+      defaultOpen, // Destructure defaultOpen
+      ...rest // Use 'rest' for remaining props
     },
     ref
   ) => {
@@ -185,7 +188,7 @@ const Sidebar = React.forwardRef<
             className
           )}
           ref={ref}
-          {...props}
+          {...rest} // Spread rest props
         >
           {children}
         </div>
@@ -193,8 +196,9 @@ const Sidebar = React.forwardRef<
     }
 
     if (isMobile) {
+      // Sheet component can handle defaultOpen if it's part of Radix Dialog props
       return (
-        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+        <Sheet open={openMobile} onOpenChange={setOpenMobile} defaultOpen={defaultOpen} {...rest}>
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
@@ -220,6 +224,7 @@ const Sidebar = React.forwardRef<
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}
         data-side={side}
+        // Do not spread ...rest here as this outer div does not need defaultOpen
       >
         {/* This is what handles the sidebar gap on desktop */}
         <div
@@ -244,7 +249,7 @@ const Sidebar = React.forwardRef<
               : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
             className
           )}
-          {...props}
+          {...rest} // Spread rest props here
         >
           <div
             data-sidebar="sidebar"
